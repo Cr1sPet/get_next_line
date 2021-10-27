@@ -6,13 +6,13 @@
 /*   By: jchopped <jchopped@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 11:23:36 by jchopped          #+#    #+#             */
-/*   Updated: 2021/10/26 12:03:16 by jchopped         ###   ########.fr       */
+/*   Updated: 2021/10/27 14:22:37 by jchopped         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-# define BUFFER_SIZE 100000
+// # define BUFFER_SIZE 1
 
 size_t	ft_strlen(char *str)
 {
@@ -94,67 +94,70 @@ void read_buff(int fd, char **str)
 	char * temp;
 	char buf[BUFFER_SIZE + 1];
 
-	while (!ft_strchr(buf, '\n'))
+	if(!*str || ft_strchr(*str, '\n'))
 	{
 		ret = read(fd, buf, BUFFER_SIZE);
-		if (ret)
+		while (ret > 0)
 		{
-			temp = *str;
-			*str = ft_strjoin(*str, buf);
-			free(temp);
+			if (ret > 0)
+			{
+				if (!*str)
+				{
+					*str  = ft_strdup("");
+				}
+				buf[ret] = 0;
+				temp = *str;
+				*str = ft_strjoin(*str, buf);
+				free(temp);
+			}
+			if(ft_strchr(*str, '\n'))
+				ret = 0;
+			ret = read(fd, buf, BUFFER_SIZE);
 		}
 	}
 }
 
-char *trim_bef(char **res, char *in_str, int len)
+char *trim_bef(char *res, char *in_str)
 {
 	int	i;
-	char *temp_res;
+	int len;
 	
 	i = 0;
-	temp_res = (char *)malloc(sizeof(char) * (len + 1));
-	if (NULL == temp_res)
+	len = 0;
+	while(in_str[len] != '\n')
+			len++;
+		len++;
+	res = (char *)malloc(sizeof(char) * (len + 1));
+	if (NULL == res)
 		return NULL;
 	while (i < len)
 	{
-		temp_res[i] = in_str[i];
+		res[i] = in_str[i];
 		i++;
 	}
-	temp_res[i] = 0;
-	*res = temp_res;
-	printf("%s - res after filling\n", *res);
-	free(temp_res);
-	len = ft_strlen(ft_strchr(in_str, '\n') + 1);
-	in_str = ft_strdup(ft_strchr(in_str, '\n') + 1);
-	return (in_str);
+	res[i] = 0;
+	return (res);
 }
 
 char *str_proc(char **in_str)		
 {
 	char *res;
-	int len;
-	char *temp;
 	char *new_in_str;
-	
-	len = 0;
+
+	res = NULL;
 	new_in_str = *in_str;
 	if (ft_strchr(new_in_str, '\n'))
 	{
-		while(new_in_str[len] != '\n')
-			len++;
-		len++;
-		temp = new_in_str;
-		new_in_str = trim_bef(&res, new_in_str, len);
-		free(temp);
-		*in_str = new_in_str;
+		res = trim_bef(res, new_in_str);
+		*in_str = ft_strdup(ft_strchr(new_in_str, '\n') + 1);
 		free(new_in_str);
 	}
 	else
 	{
 		res = ft_strdup(*in_str);
 		free(*in_str);
+		*in_str = NULL;
 	}
-	printf("%s - res before returning\n", res);
 	return (res);
 }
 
@@ -162,32 +165,31 @@ char *str_proc(char **in_str)
 char *get_next_line(int fd)
 {
 	static char	*in_str;
+	char *buf;
 
 	if(!in_str)
-		in_str = ft_strdup("");
-	else
-	{
-		in_str = ft_strdup(in_str);
-	}
-
-	if(fd && !ft_strchr(in_str,'\n'))
-		read_buff(fd, &in_str);
-	//printf("%s\n", in_str);
+		in_str = NULL;
+	buf = NULL;
+	if(-1 == fd || -1 == read(fd, buf, 0))
+		return (NULL);
+	read_buff(fd, &in_str);
+	if(NULL == in_str || (in_str && !in_str[0]))
+		return (NULL);
 	return (str_proc(&in_str));
 }
 
-int main (void)
-{
-	int	fd;
-	int i;
+// int main (void)
+// {
+// 	int	fd;
+// 	int i;
 
-	fd = open("fail2", O_RDONLY);
-	if(fd)
-	{
-		 printf("%s", get_next_line(fd));
-		
-	}
-	else 
-		printf("ERROR\n");
-	return (0);
-}
+// 	fd = open("big_line_no_nl", O_RDONLY);
+// 	if(fd)
+// 	{
+// 		printf("%s", get_next_line(fd));
+// 		printf("%s", get_next_line(fd));
+// 	}
+// 	else 
+// 		printf("ERROR\n");
+// 	return (0);
+// }

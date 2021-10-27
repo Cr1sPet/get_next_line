@@ -18,6 +18,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 
+char *get_next_line(int fd);
 // //void	ft_bzero(void *s, size_t n);
 // void	*ft_calloc(size_t num, size_t size);
 // char	*get_next_line(int fd);
