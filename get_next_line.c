@@ -12,7 +12,7 @@
 
 #include "get_next_line.h"
 
-// # define BUFFER_SIZE 1
+# define BUFFER_SIZE 1000000
 
 size_t	ft_strlen(char *str)
 {
@@ -94,25 +94,23 @@ void read_buff(int fd, char **str)
 	char * temp;
 	char buf[BUFFER_SIZE + 1];
 
-	if(!*str || ft_strchr(*str, '\n'))
+	if(!*str || !ft_strchr(*str, '\n'))
 	{
 		ret = read(fd, buf, BUFFER_SIZE);
 		while (ret > 0)
 		{
-			if (ret > 0)
+			if (!*str)
 			{
-				if (!*str)
-				{
-					*str  = ft_strdup("");
-				}
-				buf[ret] = 0;
-				temp = *str;
-				*str = ft_strjoin(*str, buf);
-				free(temp);
+				*str  = ft_strdup("");
 			}
-			if(ft_strchr(*str, '\n'))
+			buf[ret] = 0;
+			temp = *str;
+			*str = ft_strjoin(*str, buf);
+			free(temp);
+			if(!ft_strchr(*str, '\n'))
+				ret = read(fd, buf, BUFFER_SIZE);
+			else 
 				ret = 0;
-			ret = read(fd, buf, BUFFER_SIZE);
 		}
 	}
 }
@@ -178,18 +176,19 @@ char *get_next_line(int fd)
 	return (str_proc(&in_str));
 }
 
-// int main (void)
-// {
-// 	int	fd;
-// 	int i;
+int main (void)
+{
+	int	fd;
+	int i;
 
-// 	fd = open("big_line_no_nl", O_RDONLY);
-// 	if(fd)
-// 	{
-// 		printf("%s", get_next_line(fd));
-// 		printf("%s", get_next_line(fd));
-// 	}
-// 	else 
-// 		printf("ERROR\n");
-// 	return (0);
-// }
+	fd = open("big_line_with_nl", O_RDONLY);
+	if(fd)
+	{
+		printf("%s", get_next_line(fd));
+		printf("%s", get_next_line(fd));
+		// putchar(c);
+	}
+	else 
+		printf("ERROR\n");
+	return (0);
+}
