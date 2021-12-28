@@ -6,27 +6,24 @@
 /*   By: jchopped <jchopped@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 11:24:44 by jchopped          #+#    #+#             */
-/*   Updated: 2021/10/25 12:44:38 by jchopped         ###   ########.fr       */
+/*   Updated: 2021/12/28 14:34:14 by jchopped         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# include <unistd.h>
-# include <fcntl.h>
-# include <stdlib.h>
-# include <stdio.h>
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 1
+# endif
 
-char *get_next_line(int fd);
-// //void	ft_bzero(void *s, size_t n);
-// void	*ft_calloc(size_t num, size_t size);
-// char	*get_next_line(int fd);
-// char	*ft_strjoin(const char *s1, const char *s2);
-// char	*ft_strchr(const char *str, int ch);
-// char	*ft_strtrim(char const *s1, char const *set);
-// //static char	*fill_str(const char *s, size_t len, int start, size_t add_len);
-// char	*ft_substr(char const *s, unsigned int start, size_t len);
-// size_t	ft_strlen(const char *str);
+# include <unistd.h>
+# include <stdlib.h>
+
+size_t	ft_strlen(char *str);
+char	*get_next_line(int fd);
+char	*ft_strdup( char *str);
+char	*ft_strjoin(char *s1, char *s2);
+char	*ft_strchr( char *str, int ch);
 
 #endif
