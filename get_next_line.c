@@ -56,6 +56,17 @@ char	*str_proc(char **in_str)
 	return (res);
 }
 
+int	init_str(char **in_str)
+{
+	if (!*in_str)
+	{
+		*in_str = ft_strdup("");
+		if (NULL == *in_str)
+			return (0);
+	}
+	return (1);
+}
+
 void	read_buff(int fd, char **str, char *buf)
 {
 	int		ret;
@@ -64,14 +75,14 @@ void	read_buff(int fd, char **str, char *buf)
 	ret = read(fd, buf, BUFFER_SIZE);
 	while (ret > 0)
 	{
-		if (!*str)
-		{
-			*str = ft_strdup("");
-		}
+		if (!init_str(str))
+			return ;
 		buf[ret] = 0;
 		temp = *str;
 		*str = ft_strjoin(*str, buf);
 		free(temp);
+		if (NULL == *str)
+			return ;
 		if (!ft_strchr(*str, '\n'))
 			ret = read(fd, buf, BUFFER_SIZE);
 		else
